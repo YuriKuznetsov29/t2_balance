@@ -1,6 +1,9 @@
-import puppeteer from "puppeteer";
-import dotenv from "dotenv";
-import fs from "fs";
+// import puppeteer from "puppeteer";
+// import dotenv from "dotenv";
+// import fs from "fs";
+const puppeteer = require("puppeteer");
+const fs = require("fs");
+require("dotenv").config();
 
 /**
  * Получает остаток интернета пользователя на основе предоставленных учетных данных.
@@ -31,6 +34,7 @@ async function login(page, phone, password) {
     const numberInputs = await page.$$(
         "#phoneNumber1, #phoneNumber2, #phoneNumber3, #phoneNumber4, #phoneNumber5, #phoneNumber6, #phoneNumber7, #phoneNumber8, #phoneNumber9, #phoneNumber10"
     );
+
     if (numberInputs.length !== phone.length)
         throw new Error("Количество полей для ввода номера не совпадает с длиной номера.");
     for (let i = 0; i < phone.length; i++) {
@@ -53,10 +57,10 @@ async function login(page, phone, password) {
     fs.writeFileSync(COOKIES_PATH, JSON.stringify(cookies));
 }
 
-export async function getBalance(phoneArg, passwordArg) {
-    dotenv.config();
-    const phone = process.env.PHONE || phoneArg;
-    const password = process.env.PASSWORD || passwordArg;
+(async () => {
+    const phone = process.env.PHONE;
+    const password = process.env.PASSWORD;
+
     let browser;
     try {
         browser = await puppeteer.launch({
@@ -85,4 +89,4 @@ export async function getBalance(phoneArg, passwordArg) {
     } finally {
         await browser.close();
     }
-}
+})();
